@@ -21,7 +21,7 @@ class WhisperPrompt: ObservableObject {
         "ja": "こんにちは、お元気ですか？お会いできて嬉しいです。",
         "ko": "안녕하세요, 잘 지내시나요? 만나서 반갑습니다.",
         "zh": "你好，最近好吗？见到你很高兴。",
-        "zh-TW": "你好，最近好嗎？很高興見到你。",
+        "zh-TW": "你好，最近好嗎？我今天要 commit 然後 push，再 deploy 新的 feature 到 production。開個 meeting 討論一下 PR 跟 code review。",
         "th": "สวัสดีครับ/ค่ะ, สบายดีไหม? ยินดีที่ได้พบคุณ",
         "vi": "Xin chào, bạn khỏe không? Rất vui được gặp bạn.",
         "yue": "你好，最近點呀？見到你好開心。",

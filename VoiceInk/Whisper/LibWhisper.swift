@@ -36,9 +36,9 @@ actor WhisperContext {
         
         // Read language directly from UserDefaults
         let selectedLanguage = UserDefaults.standard.string(forKey: "SelectedLanguage") ?? "auto"
-        // zh-TW is a UI-only variant; Whisper only accepts "zh" as the language code.
-        // The Traditional Chinese initial_prompt handles the character set bias.
-        let whisperLanguage = selectedLanguage == "zh-TW" ? "zh" : selectedLanguage
+        // zh-TW uses auto-detect so Whisper handles code-switching naturally.
+        // Hans-Hant post-processing in WhisperState converts any Simplified output to Traditional.
+        let whisperLanguage = selectedLanguage == "zh-TW" ? "auto" : selectedLanguage
         if whisperLanguage != "auto" {
             languageCString = Array(whisperLanguage.utf8CString)
             params.language = languageCString?.withUnsafeBufferPointer { ptr in
