@@ -21,7 +21,7 @@ class WhisperPrompt: ObservableObject {
         "ja": "こんにちは、お元気ですか？お会いできて嬉しいです。",
         "ko": "안녕하세요, 잘 지내시나요? 만나서 반갑습니다.",
         "zh": "你好，最近好吗？见到你很高兴。",
-        "zh-TW": "你好，最近好嗎？我今天要 git commit 然後 git push 到 main branch，再 deploy 新的 feature 到 production。開個 meeting 討論一下 PR 跟 code review。merge 之前先跑 test。記得 commit message 要寫清楚。",
+        "zh-TW": "今天的 standup 討論了 sprint backlog 跟 KPI、OKR。這個 feature 在 alpha 測試，beta 版等 hotfix 後 release。git commit 完 push 到 main，deploy 前先跑 unit test 跟 code review。跟 cofounder 開 1 on 1，聊了 fundraising 跟用戶 retention。refactor 完記得更新 API endpoint 的 doc。",
         "th": "สวัสดีครับ/ค่ะ, สบายดีไหม? ยินดีที่ได้พบคุณ",
         "vi": "Xin chào, bạn khỏe không? Rất vui được gặp bạn.",
         "yue": "你好，最近點呀？見到你好開心。",
