@@ -34,6 +34,7 @@ struct VoiceInkApp: App {
     
     init() {
         AppDefaults.registerDefaults()
+        CursorPaster.startObservingInputSourceChanges()
 
         if UserDefaults.standard.object(forKey: "powerModeUIFlag") == nil {
             let hasEnabledPowerModes = PowerModeManager.shared.configurations.contains { $0.isEnabled }

@@ -7,6 +7,35 @@ private let logger = Logger(subsystem: "com.VoiceInk", category: "CursorPaster")
 
 class CursorPaster {
 
+    // MARK: - Input source observer
+
+    /// The last QWERTY-compatible input source the *user* explicitly selected.
+    /// Updated by the DistributedNotificationCenter observer; ignored when we
+    /// are doing a programmatic switch ourselves.
+    private static var lastKnownQWERTYSourceID: String?
+
+    /// Set to true while we are programmatically switching input sources so
+    /// the observer does not record our own changes as "user choices".
+    private static var programmaticSwitchInProgress = false
+
+    /// Register for input-source-change notifications. Call once at app startup.
+    static func startObservingInputSourceChanges() {
+        DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name(kTISNotifySelectedKeyboardInputSourceChanged as String),
+            object: nil,
+            queue: .main
+        ) { _ in
+            guard !programmaticSwitchInProgress else { return }
+            guard let src = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue(),
+                  let id = sourceID(for: src),
+                  isQWERTY(id) else { return }
+            lastKnownQWERTYSourceID = id
+            logger.notice("Recorded user QWERTY source: \(id, privacy: .public)")
+        }
+    }
+
+    // MARK: - Public paste entry point
+
     static func pasteAtCursor(_ text: String) {
         let pasteboard = NSPasteboard.general
         let shouldRestoreClipboard = UserDefaults.standard.bool(forKey: "restoreClipboardAfterPaste")
@@ -51,6 +80,11 @@ class CursorPaster {
     /// Paste from the clipboard using CGEvent, temporarily switching to a
     /// QWERTY-compatible input source so that virtual key 0x09 is reliably
     /// interpreted as "V" for Cmd+V.
+    ///
+    /// When the current source is an IME (e.g. Zhuyin), we switch to the user's
+    /// last known QWERTY source (recorded by the observer) rather than ABC, so
+    /// that macOS's input-source history — and the toggle shortcut — remain
+    /// unaffected by VoiceInk's temporary switch.
     private static func pasteFromClipboard() {
         guard AXIsProcessTrusted() else {
             logger.error("Accessibility not trusted — cannot paste")
@@ -64,6 +98,12 @@ class CursorPaster {
         let currentID = sourceID(for: currentSource) ?? "unknown"
         let switched = switchToQWERTYInputSource()
         logger.notice("Pasting: inputSource=\(currentID, privacy: .public), switched=\(switched)")
+
+        // Capture which QWERTY layout we just switched to, so we can verify at
+        // restore time that the user hasn't manually changed it in the interim.
+        let switchedToID: String? = switched
+            ? TISCopyCurrentKeyboardInputSource().map { sourceID(for: $0.takeRetainedValue()) } ?? nil
+            : nil
 
         // If we switched input sources, wait 30 ms for the system to apply it
         // before posting the CGEvents. Use asyncAfter instead of usleep so the
@@ -90,16 +130,33 @@ class CursorPaster {
 
             if switched {
                 // Restore the original input source after a short delay so the
-                // posted events are processed under ABC/US first.
+                // posted events are processed under the QWERTY layout first.
+                // Guard: only restore if the current source is still the QWERTY
+                // layout we switched to — skip if the user manually changed it.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    TISSelectInputSource(currentSource)
-                    logger.notice("Restored input source to \(currentID, privacy: .public)")
+                    programmaticSwitchInProgress = true
+                    defer { programmaticSwitchInProgress = false }
+
+                    if let targetID = switchedToID,
+                       let nowSrc = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue(),
+                       sourceID(for: nowSrc) == targetID {
+                        TISSelectInputSource(currentSource)
+                        logger.notice("Restored input source to \(currentID, privacy: .public)")
+                    } else {
+                        logger.notice("Skipped restore — input source changed during paste")
+                    }
                 }
             }
         }
     }
 
-    /// Try to switch to ABC or US QWERTY. Returns true if the switch was made.
+    /// Switch to a QWERTY-compatible input source. Returns true if a switch was made.
+    ///
+    /// Priority:
+    ///  1. The user's last known QWERTY source (recorded by the observer) — preserves
+    ///     the user's own input-source history and toggle-shortcut behaviour.
+    ///  2. ABC or US QWERTY as a fallback (e.g. on first launch before any switch
+    ///     has been observed).
     private static func switchToQWERTYInputSource() -> Bool {
         guard let currentSourceRef = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue() else { return false }
         if let currentID = sourceID(for: currentSourceRef), isQWERTY(currentID) {
@@ -112,11 +169,20 @@ class CursorPaster {
             return false
         }
 
-        // Prefer ABC, then US.
-        let preferred = ["com.apple.keylayout.ABC", "com.apple.keylayout.US"]
-        for targetID in preferred {
+        // Build ordered candidate list: user's last known QWERTY first, then ABC/US.
+        var candidateIDs: [String] = []
+        if let last = lastKnownQWERTYSourceID {
+            candidateIDs.append(last)
+        }
+        for id in ["com.apple.keylayout.ABC", "com.apple.keylayout.US"] {
+            if !candidateIDs.contains(id) { candidateIDs.append(id) }
+        }
+
+        for targetID in candidateIDs {
             if let match = list.first(where: { sourceID(for: $0) == targetID }) {
+                programmaticSwitchInProgress = true
                 let status = TISSelectInputSource(match)
+                programmaticSwitchInProgress = false
                 if status == noErr {
                     logger.notice("Switched input source to \(targetID, privacy: .public)")
                     return true
