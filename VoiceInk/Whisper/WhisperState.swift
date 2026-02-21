@@ -360,11 +360,8 @@ class WhisperState: NSObject, ObservableObject {
             logger.notice("📝 Output filter result: \(text, privacy: .public)")
 
             // Convert Simplified Chinese → Traditional Chinese when zh-TW is selected.
-            // CFStringTransform("Hans-Hant") is a built-in ICU transform; English characters are unaffected.
             if UserDefaults.standard.string(forKey: "SelectedLanguage") == "zh-TW" {
-                let mutableStr = NSMutableString(string: text)
-                CFStringTransform(mutableStr, nil, "Hans-Hant" as CFString, false)
-                text = mutableStr as String
+                text = ChineseConverter.simplifiedToTraditional(text)
             }
             let transcriptionDuration = Date().timeIntervalSince(transcriptionStart)
 

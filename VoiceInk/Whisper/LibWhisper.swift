@@ -36,8 +36,9 @@ actor WhisperContext {
         
         // Read language directly from UserDefaults
         let selectedLanguage = UserDefaults.standard.string(forKey: "SelectedLanguage") ?? "auto"
-        // zh-TW uses auto-detect so Whisper handles code-switching naturally.
-        // Hans-Hant post-processing in WhisperState converts any Simplified output to Traditional.
+        // zh-TW maps to "auto" so Whisper can handle code-switching (English tech terms like
+        // "commit", "push" in Chinese speech). The zh-TW initial_prompt (set by WhisperPrompt)
+        // biases language detection toward Chinese. ChineseConverter handles Simplified→Traditional.
         let whisperLanguage = selectedLanguage == "zh-TW" ? "auto" : selectedLanguage
         if whisperLanguage != "auto" {
             languageCString = Array(whisperLanguage.utf8CString)

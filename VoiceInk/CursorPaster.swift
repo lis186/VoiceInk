@@ -143,6 +143,9 @@ class CursorPaster {
             "com.apple.keylayout.British",
             "com.apple.keylayout.Australian",
             "com.apple.keylayout.Canadian",
+            // Dvorak - QWERTY ⌘: shortcuts use QWERTY key positions,
+            // so virtualKey 0x09 = Cmd+V without any layout switch.
+            "com.apple.keylayout.DVORAK-QWERTYCMD",
         ]
         return qwertyIDs.contains(id)
     }
