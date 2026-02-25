@@ -75,8 +75,12 @@ struct ModelCardRowView: View {
                     )
                 }
             case .qwen3FluidAudio, .qwen3MLX:
-                // TODO: 建立 Qwen3ModelCardRowView
-                EmptyView()
+                if let qwen3Model = model as? Qwen3Model {
+                    Qwen3ModelCardRowView(
+                        model: qwen3Model,
+                        whisperState: whisperState
+                    )
+                }
             }
         }
     }
