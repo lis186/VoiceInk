@@ -16,7 +16,6 @@ class TranscriptionServiceRegistry {
     private(set) lazy var nativeAppleTranscriptionService = NativeAppleTranscriptionService()
     private(set) lazy var parakeetTranscriptionService = ParakeetTranscriptionService()
 
-    private var _qwen3FluidAudioService: (any TranscriptionService)?
     private(set) lazy var qwen3MLXTranscriptionService = Qwen3MLXTranscriptionService()
 
     init(whisperState: WhisperState, modelsDirectory: URL) {
@@ -30,15 +29,6 @@ class TranscriptionServiceRegistry {
             return localTranscriptionService
         case .parakeet:
             return parakeetTranscriptionService
-        case .qwen3FluidAudio:
-            if #available(macOS 15, iOS 18, *) {
-                if _qwen3FluidAudioService == nil {
-                    _qwen3FluidAudioService = Qwen3FluidAudioTranscriptionService()
-                }
-                return _qwen3FluidAudioService!
-            } else {
-                return qwen3MLXTranscriptionService
-            }
         case .qwen3MLX:
             return qwen3MLXTranscriptionService
         case .nativeApple:

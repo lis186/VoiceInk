@@ -8,21 +8,8 @@ struct Qwen3ModelCardRowView: View {
         whisperState.currentTranscriptionModel?.name == model.name
     }
 
-    // FluidAudio: requires explicit download. MLX: auto-downloads on first use.
-    var isDownloaded: Bool {
-        switch model.provider {
-        case .qwen3FluidAudio:
-            return whisperState.isQwen3ModelDownloaded(model)
-        case .qwen3MLX:
-            return true
-        default:
-            return false
-        }
-    }
-
-    var isDownloading: Bool {
-        whisperState.qwen3DownloadStates[model.name] == true
-    }
+    // MLX auto-downloads on first use, always treated as available
+    var isDownloaded: Bool { true }
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -30,7 +17,6 @@ struct Qwen3ModelCardRowView: View {
                 headerSection
                 metadataSection
                 descriptionSection
-                progressSection
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -67,15 +53,8 @@ struct Qwen3ModelCardRowView: View {
                     .padding(.vertical, 2)
                     .background(Capsule().fill(Color.accentColor))
                     .foregroundColor(.white)
-            } else if model.provider == .qwen3MLX {
+            } else {
                 Text("Auto-download")
-                    .font(.system(size: 11, weight: .medium))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(Color(.quaternaryLabelColor)))
-                    .foregroundColor(Color(.labelColor))
-            } else if isDownloaded {
-                Text("Downloaded")
                     .font(.system(size: 11, weight: .medium))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
@@ -89,10 +68,7 @@ struct Qwen3ModelCardRowView: View {
         HStack(spacing: 12) {
             Label("52 languages", systemImage: "globe")
             Label(model.size, systemImage: "internaldrive")
-            Label(
-                model.provider == .qwen3MLX ? "Apple Silicon" : "macOS 15+",
-                systemImage: model.provider == .qwen3MLX ? "cpu" : "desktopcomputer"
-            )
+            Label("Apple Silicon", systemImage: "cpu")
         }
         .font(.system(size: 11))
         .foregroundColor(Color(.secondaryLabelColor))
@@ -108,25 +84,13 @@ struct Qwen3ModelCardRowView: View {
             .padding(.top, 4)
     }
 
-    private var progressSection: some View {
-        Group {
-            if isDownloading {
-                let progress = whisperState.downloadProgress[model.name] ?? 0.0
-                ProgressView(value: progress)
-                    .progressViewStyle(LinearProgressViewStyle())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 8)
-            }
-        }
-    }
-
     private var actionSection: some View {
         HStack(spacing: 8) {
             if isCurrent {
                 Text("Default Model")
                     .font(.system(size: 12))
                     .foregroundColor(Color(.secondaryLabelColor))
-            } else if isDownloaded {
+            } else {
                 Button(action: {
                     Task {
                         await whisperState.setDefaultTranscriptionModel(model)
@@ -137,25 +101,6 @@ struct Qwen3ModelCardRowView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-            } else {
-                // FluidAudio only: explicit download required
-                Button(action: {
-                    Task {
-                        await whisperState.downloadQwen3FluidAudioModel(model)
-                    }
-                }) {
-                    HStack(spacing: 4) {
-                        Text(isDownloading ? "Downloading..." : "Download")
-                        Image(systemName: "arrow.down.circle")
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Capsule().fill(Color.accentColor))
-                }
-                .buttonStyle(.plain)
-                .disabled(isDownloading)
             }
         }
     }

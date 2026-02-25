@@ -74,7 +74,7 @@ struct ModelCardRowView: View {
                         editAction: editAction ?? { _ in }
                     )
                 }
-            case .qwen3FluidAudio, .qwen3MLX:
+            case .qwen3MLX:
                 if let qwen3Model = model as? Qwen3Model {
                     Qwen3ModelCardRowView(
                         model: qwen3Model,
