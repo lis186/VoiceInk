@@ -4,7 +4,12 @@ import UniformTypeIdentifiers
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     weak var menuBarManager: MenuBarManager?
-    
+    weak var hotkeyManager: HotkeyManager?
+
+    func applicationWillTerminate(_ notification: Notification) {
+        hotkeyManager?.cleanup()
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         menuBarManager?.applyActivationPolicy()
     }
