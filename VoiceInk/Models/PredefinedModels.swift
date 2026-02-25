@@ -122,7 +122,27 @@ import Foundation
             ramUsage: 0.8,
             supportedLanguages: getLanguageDictionary(isMultilingual: true, provider: .parakeet)
         ),
-        
+
+        // Qwen3-ASR (FluidAudio CoreML, macOS 15+)
+        Qwen3Model(
+            name: "qwen3-asr-0.6b-coreml",
+            displayName: "Qwen3-ASR 0.6B (CoreML)",
+            description: "Alibaba Qwen3-ASR via CoreML. 52 languages + 22 Chinese dialects. Requires macOS 15+.",
+            provider: .qwen3FluidAudio,
+            size: "~900 MB",
+            supportedLanguages: getLanguageDictionary(isMultilingual: true)
+        ),
+
+        // Qwen3-ASR (MLX, macOS 14+, Apple Silicon)
+        Qwen3Model(
+            name: "qwen3-asr-0.6b-mlx",
+            displayName: "Qwen3-ASR 0.6B (MLX)",
+            description: "Alibaba Qwen3-ASR via MLX Swift. 52 languages + 22 Chinese dialects. Requires Apple Silicon.",
+            provider: .qwen3MLX,
+            size: "~400 MB",
+            supportedLanguages: getLanguageDictionary(isMultilingual: true)
+        ),
+
          // Local Models
          LocalModel(
              name: "ggml-tiny",
