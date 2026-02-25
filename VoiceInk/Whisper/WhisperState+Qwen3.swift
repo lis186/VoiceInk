@@ -21,7 +21,16 @@ extension WhisperState {
         guard !isQwen3ModelDownloaded(model) else { return }
 
         let modelName = model.name
+        qwen3DownloadStates[modelName] = true
         downloadProgress[modelName] = 0.0
+
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.2, repeats: true) { timer in
+            Task { @MainActor in
+                if let currentProgress = self.downloadProgress[modelName], currentProgress < 0.9 {
+                    self.downloadProgress[modelName] = currentProgress + 0.005
+                }
+            }
+        }
 
         do {
             if #available(macOS 15, iOS 18, *) {
@@ -32,6 +41,12 @@ extension WhisperState {
         } catch {
             UserDefaults.standard.set(false, forKey: qwen3DefaultsKey(for: modelName))
         }
+
+        timer.invalidate()
+        qwen3DownloadStates[modelName] = false
+        downloadProgress[modelName] = nil
+
+        refreshAllAvailableModels()
     }
 
     // MARK: - Qwen3 MLX（qwen3-asr-swift 首次 transcribe 時自動下載）
