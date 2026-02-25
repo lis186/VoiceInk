@@ -1,4 +1,5 @@
 import Foundation
+import AVFoundation
 import Qwen3ASR
 import FluidAudio
 import os.log
@@ -25,14 +26,20 @@ class Qwen3MLXTranscriptionService: TranscriptionService {
         }.value
     }
 
+    // VoiceInk 的 WAV 用 Core Audio kAudioFileWAVEType 寫入，
+    // 會加 FLLR padding chunk 讓音訊資料對齊 4096 bytes（offset 並非固定 44）。
+    // 必須用 AVAudioFile 解析，不能硬編碼 skip 44 bytes。
     private func readAudioSamples(from url: URL) throws -> [Float] {
-        let data = try Data(contentsOf: url)
-        guard data.count > 44, (data.count - 44) % 2 == 0 else { throw ASRError.invalidAudioData }
-        return stride(from: 44, to: data.count, by: 2).map {
-            data[$0..<$0 + 2].withUnsafeBytes {
-                let short = Int16(littleEndian: $0.load(as: Int16.self))
-                return max(-1.0, min(Float(short) / 32767.0, 1.0))
-            }
+        let audioFile = try AVAudioFile(forReading: url)
+        let format = audioFile.processingFormat
+        let frameCount = AVAudioFrameCount(audioFile.length)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+            throw ASRError.invalidAudioData
         }
+        try audioFile.read(into: buffer)
+        guard let floatData = buffer.floatChannelData else {
+            throw ASRError.invalidAudioData
+        }
+        return Array(UnsafeBufferPointer(start: floatData[0], count: Int(buffer.frameLength)))
     }
 }
