@@ -15,6 +15,12 @@ class TranscriptionServiceRegistry {
     private(set) lazy var cloudTranscriptionService = CloudTranscriptionService(modelContext: whisperState.modelContext)
     private(set) lazy var nativeAppleTranscriptionService = NativeAppleTranscriptionService()
     private(set) lazy var parakeetTranscriptionService = ParakeetTranscriptionService()
+
+    @available(macOS 15, iOS 18, *)
+    private(set) lazy var qwen3FluidAudioTranscriptionService = Qwen3FluidAudioTranscriptionService()
+
+    private(set) lazy var qwen3MLXTranscriptionService = Qwen3MLXTranscriptionService()
+
     init(whisperState: WhisperState, modelsDirectory: URL) {
         self.whisperState = whisperState
         self.modelsDirectory = modelsDirectory
@@ -26,6 +32,14 @@ class TranscriptionServiceRegistry {
             return localTranscriptionService
         case .parakeet:
             return parakeetTranscriptionService
+        case .qwen3FluidAudio:
+            if #available(macOS 15, iOS 18, *) {
+                return qwen3FluidAudioTranscriptionService
+            } else {
+                return qwen3MLXTranscriptionService
+            }
+        case .qwen3MLX:
+            return qwen3MLXTranscriptionService
         case .nativeApple:
             return nativeAppleTranscriptionService
         default:
