@@ -17,6 +17,8 @@ enum AudioInputMode: String, CaseIterable {
 
 class AudioDeviceManager: ObservableObject {
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "AudioDeviceManager")
+    // 儲存 property listener block 以便 deinit 正確移除
+    private var deviceListenerBlock: AudioObjectPropertyListenerBlock?
     @Published var availableDevices: [(id: AudioDeviceID, uid: String, name: String)] = []
     @Published var selectedDeviceID: AudioDeviceID?
     @Published var inputMode: AudioInputMode = .custom
@@ -381,24 +383,19 @@ class AudioDeviceManager: ObservableObject {
             mScope: kAudioObjectPropertyScopeGlobal,
             mElement: kAudioObjectPropertyElementMain
         )
-        
         let systemObjectID = AudioObjectID(kAudioObjectSystemObject)
-        
-        let status = AudioObjectAddPropertyListener(
-            systemObjectID,
-            &address,
-            { (_, _, _, userData) -> OSStatus in
-                let manager = Unmanaged<AudioDeviceManager>.fromOpaque(userData!).takeUnretainedValue()
-                DispatchQueue.main.async {
-                    manager.handleDeviceListChange()
-                }
-                return noErr
-            },
-            UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
-        )
-        
+
+        // 使用 Block API：block 可捕捉 [weak self]，存為 property 後可被正確移除
+        let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+            guard let self else { return }
+            DispatchQueue.main.async { self.handleDeviceListChange() }
+        }
+        deviceListenerBlock = block
+
+        let status = AudioObjectAddPropertyListenerBlock(systemObjectID, &address, nil, block)
         if status != noErr {
-            logger.error("Failed to add device change listener: \(status)")
+            logger.error("Failed to add device change listener block: \(status)")
+            deviceListenerBlock = nil
         }
     }
     
@@ -468,19 +465,14 @@ class AudioDeviceManager: ObservableObject {
     }
     
     deinit {
+        guard let block = deviceListenerBlock else { return }
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDevices,
             mScope: kAudioObjectPropertyScopeGlobal,
             mElement: kAudioObjectPropertyElementMain
         )
-        
-        AudioObjectRemovePropertyListener(
-            AudioObjectID(kAudioObjectSystemObject),
-            &address,
-            { (_, _, _, userData) -> OSStatus in
-                return noErr
-            },
-            UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+        AudioObjectRemovePropertyListenerBlock(
+            AudioObjectID(kAudioObjectSystemObject), &address, nil, block
         )
     }
     
