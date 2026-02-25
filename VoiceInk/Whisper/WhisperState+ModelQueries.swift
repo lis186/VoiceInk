@@ -29,6 +29,11 @@ extension WhisperState {
             case .custom:
                 // Custom models are always usable since they contain their own API keys
                 return true
+            case .qwen3FluidAudio:
+                return isQwen3ModelDownloaded(named: model.name)
+            case .qwen3MLX:
+                // MLX 模型首次 transcribe 時自動下載，視為永遠可用
+                return true
             }
         }
     }

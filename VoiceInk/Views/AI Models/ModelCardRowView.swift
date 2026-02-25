@@ -74,6 +74,9 @@ struct ModelCardRowView: View {
                         editAction: editAction ?? { _ in }
                     )
                 }
+            case .qwen3FluidAudio, .qwen3MLX:
+                // TODO: 建立 Qwen3ModelCardRowView
+                EmptyView()
             }
         }
     }
