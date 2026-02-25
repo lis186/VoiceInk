@@ -27,7 +27,7 @@ class Qwen3MLXTranscriptionService: TranscriptionService {
 
     private func readAudioSamples(from url: URL) throws -> [Float] {
         let data = try Data(contentsOf: url)
-        guard data.count > 44 else { throw ASRError.invalidAudioData }
+        guard data.count > 44, (data.count - 44) % 2 == 0 else { throw ASRError.invalidAudioData }
         return stride(from: 44, to: data.count, by: 2).map {
             data[$0..<$0 + 2].withUnsafeBytes {
                 let short = Int16(littleEndian: $0.load(as: Int16.self))
