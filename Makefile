@@ -3,7 +3,7 @@ DEPS_DIR := $(HOME)/VoiceInk-Dependencies
 WHISPER_CPP_DIR := $(DEPS_DIR)/whisper.cpp
 FRAMEWORK_PATH := $(WHISPER_CPP_DIR)/build-apple/whisper.xcframework
 
-.PHONY: all clean whisper setup build local check healthcheck help dev run
+.PHONY: all clean whisper setup build local check healthcheck help dev run share
 
 # Default target
 all: check build
@@ -90,6 +90,30 @@ run:
 		fi; \
 	fi
 
+# Package app + install script for sharing (no Apple Developer certificate)
+share:
+	@if [ ! -d "$$HOME/Downloads/VoiceInk.app" ]; then \
+		echo "Error: ~/Downloads/VoiceInk.app not found. Run 'make local' first."; \
+		exit 1; \
+	fi
+	@echo "Packaging VoiceInk for sharing..."
+	@STAGING="$$HOME/Downloads/VoiceInk-share" && \
+	rm -rf "$$STAGING" && \
+	mkdir -p "$$STAGING" && \
+	ditto "$$HOME/Downloads/VoiceInk.app" "$$STAGING/VoiceInk.app" && \
+	printf '#!/bin/bash\nset -e\nSCRIPT_DIR="$$(cd "$$(dirname "$$0")" && pwd)"\nAPP="$$SCRIPT_DIR/VoiceInk.app"\necho "正在安裝 VoiceInk..."\nxattr -cr "$$APP"\ncp -R "$$APP" /Applications/\nxattr -cr /Applications/VoiceInk.app\necho ""\necho "安裝完成！正在啟動 VoiceInk..."\necho ""\necho "首次啟動請依序授予以下權限（按錄音鍵即可觸發授權視窗）："\necho "  - 輔助使用（Accessibility）"\necho "  - 螢幕錄影（Screen Recording）"\necho "  - 麥克風（Microphone）"\necho ""\necho "【推薦使用本地模型 Qwen3-ASR 0.6B (MLX)】"\necho "此版本內建 Qwen3-ASR，支援 52 種語言及 22 種中文方言，"\necho "完全離線執行、不需 API 金鑰，中英夾雜辨識效果優異。"\necho "設定方式：左側選單點選 AI Models → 上方切換至 Local → 下載 Qwen3-ASR 0.6B (MLX)"\necho ""\nopen /Applications/VoiceInk.app\n' > "$$STAGING/install.sh" && \
+	chmod +x "$$STAGING/install.sh" && \
+	rm -f "$$HOME/Downloads/VoiceInk-share.zip" && \
+	ditto -c -k --sequesterRsrc "$$STAGING" "$$HOME/Downloads/VoiceInk-share.zip" && \
+	rm -rf "$$STAGING" && \
+	echo "" && \
+	echo "Package ready: ~/Downloads/VoiceInk-share.zip" && \
+	echo "" && \
+	echo "Instructions for recipient:" && \
+	echo "  1. Unzip VoiceInk-share.zip" && \
+	echo "  2. Open Terminal, cd to the unzipped folder" && \
+	echo "  3. Run: bash install.sh"
+
 # Cleanup
 clean:
 	@echo "Cleaning build artifacts..."
@@ -107,5 +131,6 @@ help:
 	@echo "  run                Launch the built VoiceInk app"
 	@echo "  dev                Build and run the app (for development)"
 	@echo "  all                Run full build process (default)"
+	@echo "  share              Package app + install script into ~/Downloads/VoiceInk-share.zip"
 	@echo "  clean              Remove build artifacts"
 	@echo "  help               Show this help message"
