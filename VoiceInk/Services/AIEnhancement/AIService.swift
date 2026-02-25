@@ -54,7 +54,7 @@ enum AIProvider: String, CaseIterable {
         case .gemini:
             return "gemini-2.5-flash-lite"
         case .anthropic:
-            return "claude-sonnet-4-5"
+            return "claude-sonnet-4-6"
         case .openAI:
             return "gpt-5.2"
         case .mistral:
@@ -79,12 +79,8 @@ enum AIProvider: String, CaseIterable {
         case .cerebras:
             return [
                 "gpt-oss-120b",
-                "llama-3.1-8b",
-                "llama-4-scout-17b-16e-instruct",
-                "llama-3.3-70b",
-                "qwen-3-32b",
+                "llama3.1-8b",
                 "qwen-3-235b-a22b-instruct-2507",
-                "zai-glm-4.6",
                 "zai-glm-4.7"
             ]
         case .groq:
@@ -108,6 +104,8 @@ enum AIProvider: String, CaseIterable {
             ]
         case .anthropic:
             return [
+                "claude-opus-4-6",
+                "claude-sonnet-4-6",
                 "claude-opus-4-5",
                 "claude-sonnet-4-5",
                 "claude-haiku-4-5"

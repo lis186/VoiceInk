@@ -132,7 +132,6 @@ import Foundation
             size: "~400 MB",
             supportedLanguages: getLanguageDictionary(isMultilingual: true)
         ),
-
          // Local Models
          LocalModel(
              name: "ggml-tiny",
@@ -215,7 +214,7 @@ import Foundation
              accuracy: 0.95,
              ramUsage: 1.0
          ),
-         
+
                  // Cloud Models
         CloudModel(
             name: "whisper-large-v3-turbo",

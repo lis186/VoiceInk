@@ -120,6 +120,9 @@ struct VoiceInkApp: App {
         }
 
         AppShortcuts.updateAppShortcutParameters()
+
+        // Start cleanup service for the app's lifetime, not tied to window lifecycle
+        TranscriptionAutoCleanupService.shared.startMonitoring(modelContext: container.mainContext)
     }
     
     // MARK: - Container Creation Helpers
@@ -229,9 +232,6 @@ struct VoiceInkApp: App {
                             AnnouncementsService.shared.start()
                         }
                         
-                        // Start the transcription auto-cleanup service (handles immediate and scheduled transcript deletion)
-                        transcriptionAutoCleanupService.startMonitoring(modelContext: container.mainContext)
-                        
                         // Start the automatic audio cleanup process only if transcript cleanup is not enabled
                         if !UserDefaults.standard.bool(forKey: "IsTranscriptionCleanupEnabled") {
                             audioCleanupManager.startAutomaticCleanup(modelContext: container.mainContext)
@@ -252,9 +252,6 @@ struct VoiceInkApp: App {
                     .onDisappear {
                         AnnouncementsService.shared.stop()
                         whisperState.unloadModel()
-                        
-                        // Stop the transcription auto-cleanup service
-                        transcriptionAutoCleanupService.stopMonitoring()
                         
                         // Stop the automatic audio cleanup process
                         audioCleanupManager.stopAutomaticCleanup()
