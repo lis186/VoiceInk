@@ -12,6 +12,8 @@ enum ModelProvider: String, Codable, Hashable, CaseIterable {
     case soniox = "Soniox"
     case custom = "Custom"
     case nativeApple = "Native Apple"
+    case qwen3FluidAudio = "Qwen3 (CoreML)"
+    case qwen3MLX = "Qwen3 (MLX)"
     // Future providers can be added here
 }
 
@@ -197,4 +199,15 @@ struct ImportedLocalModel: TranscriptionModel {
         self.isMultilingualModel = true
         self.supportedLanguages = PredefinedModels.getLanguageDictionary(isMultilingual: true, provider: .local)
     }
+}
+
+struct Qwen3Model: TranscriptionModel {
+    let id = UUID()
+    let name: String
+    let displayName: String
+    let description: String
+    let provider: ModelProvider   // .qwen3FluidAudio 或 .qwen3MLX
+    let size: String
+    var isMultilingualModel: Bool { true }
+    let supportedLanguages: [String: String]
 }
