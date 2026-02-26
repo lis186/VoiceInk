@@ -6,6 +6,7 @@
 //
 
 import Testing
+import Foundation
 import SwiftData
 @testable import VoiceInk
 
@@ -21,9 +22,10 @@ struct VoiceInkTests {
 
 struct WhisperStateMemoryTests {
 
+    @MainActor
     private func makeInMemoryContext() throws -> ModelContext {
         let schema = Schema([Transcription.self, VocabularyWord.self, WordReplacement.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         let container = try ModelContainer(for: schema, configurations: [config])
         return container.mainContext
     }
@@ -41,9 +43,7 @@ struct WhisperStateMemoryTests {
             // state 在此 scope 結束後應被釋放
         }
 
-        #expect(weakState == nil,
-            "WhisperState 應在外部 strong reference 消失後被釋放。" +
-            "失敗原因：NotificationCenter 因 addObserver(self, selector:) 持有強引用。" +
-            "修復方法：在 deinit 加入 NotificationCenter.default.removeObserver(self)")
+        // 修復方法：在 deinit 加入 NotificationCenter.default.removeObserver(self)
+        #expect(weakState == nil)
     }
 }
