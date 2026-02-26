@@ -37,6 +37,6 @@ extension Logger {
         }
         guard result == KERN_SUCCESS else { return }
         let usedMB = Double(info.resident_size) / 1_048_576
-        self.notice("📊 Memory [\(context)]: \(String(format: "%.1f", usedMB)) MB")
+        self.notice("📊 Memory [\(context, privacy: .public)]: \(String(format: "%.1f", usedMB), privacy: .public) MB")
     }
 }
