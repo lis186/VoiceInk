@@ -82,6 +82,12 @@ class LocalTranscriptionService: TranscriptionService {
         return text
     }
     
+    /// Releases the locally cached WhisperContext reference so ARC can deallocate it.
+    /// Called by TranscriptionServiceRegistry.cleanup() after each recording session.
+    func cleanup() {
+        whisperContext = nil
+    }
+
     private func readAudioSamples(_ url: URL) throws -> [Float] {
         let data = try Data(contentsOf: url)
         let floats = stride(from: 44, to: data.count, by: 2).map {
