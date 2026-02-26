@@ -254,6 +254,11 @@ class HotkeyManager: ObservableObject {
         }
     }
     
+    /// App 終止前的顯式清理，由 AppDelegate.applicationWillTerminate 呼叫
+    func cleanup() {
+        removeAllMonitoring()
+    }
+
     private func removeAllMonitoring() {
         if let monitor = globalEventMonitor {
             NSEvent.removeMonitor(monitor)
