@@ -92,6 +92,7 @@ class TranscriptionServiceRegistry {
     }
 
     func cleanup() {
+        localTranscriptionService.cleanup()
         parakeetTranscriptionService.cleanup()
     }
 }
