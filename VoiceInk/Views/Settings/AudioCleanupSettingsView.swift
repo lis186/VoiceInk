@@ -9,6 +9,8 @@ struct AudioCleanupSettingsView: View {
     @AppStorage("TranscriptionRetentionMinutes") private var transcriptionRetentionMinutes = 24 * 60
     @AppStorage("IsAudioCleanupEnabled") private var isAudioCleanupEnabled = false
     @AppStorage("AudioRetentionPeriod") private var audioRetentionPeriod = 7
+    @AppStorage("DeleteAudioAfterTranscription") private var deleteAudioAfterTranscription = false
+    @AppStorage("MaxAudioFileCount") private var maxAudioFileCount = 0
     @State private var isPerformingCleanup = false
     @State private var isShowingConfirmation = false
     @State private var cleanupInfo: (fileCount: Int, totalSize: Int64, transcriptions: [Transcription]) = (0, 0, [])
@@ -100,6 +102,16 @@ struct AudioCleanupSettingsView: View {
                 }
             }
 
+            // Immediate audio delete - available when full transcript cleanup is off
+            if !isTranscriptionCleanupEnabled {
+                Toggle(isOn: $deleteAudioAfterTranscription) {
+                    HStack(spacing: 4) {
+                        Text("Delete Audio After Transcription")
+                        InfoTip("Automatically delete the audio file once transcription is complete. The text transcript is kept.")
+                    }
+                }
+            }
+
             // Audio cleanup - only show if transcript cleanup is disabled
             if !isTranscriptionCleanupEnabled {
                 VStack(alignment: .leading, spacing: 0) {
@@ -138,6 +150,15 @@ struct AudioCleanupSettingsView: View {
                                 Text("14 days").tag(14)
                                 Text("30 days").tag(30)
                             }
+
+                            Picker("Keep at most", selection: $maxAudioFileCount) {
+                                Text("Unlimited").tag(0)
+                                Text("20 recordings").tag(20)
+                                Text("50 recordings").tag(50)
+                                Text("100 recordings").tag(100)
+                                Text("200 recordings").tag(200)
+                            }
+                            .help("Delete audio from older recordings once you exceed this count (newest are kept).")
 
                             Button(isPerformingCleanup ? "Analyzing..." : "Run Cleanup Now") {
                                 Task {

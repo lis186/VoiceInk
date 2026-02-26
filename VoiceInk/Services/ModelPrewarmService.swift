@@ -8,10 +8,9 @@ final class ModelPrewarmService: ObservableObject {
     private let whisperState: WhisperState
     private let modelContext: ModelContext
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "ModelPrewarm")
-    private lazy var serviceRegistry = TranscriptionServiceRegistry(
-        whisperState: whisperState,
-        modelsDirectory: whisperState.modelsDirectory
-    )
+    // NOTE: We intentionally do NOT create a separate TranscriptionServiceRegistry here.
+    // Using whisperState.serviceRegistry ensures the model is loaded into the shared
+    // WhisperContext, preventing the model from being loaded twice into memory.
     private let prewarmAudioURL = Bundle.main.url(forResource: "esc", withExtension: "wav")
     private let prewarmEnabledKey = "PrewarmModelOnWake"
 
@@ -74,13 +73,31 @@ final class ModelPrewarmService: ObservableObject {
         }
 
         logger.notice("🌅 Prewarming \(currentModel.displayName)")
+        logger.memoryUsage("prewarm-start")
         let startTime = Date()
 
         do {
-            let _ = try await serviceRegistry.transcribe(audioURL: audioURL, model: currentModel)
-            let duration = Date().timeIntervalSince(startTime)
+            // For local Whisper models: load via the main WhisperState so only one
+            // WhisperContext exists in memory. Without this, prewarm and the user's
+            // first recording would each create their own context (2× model RAM).
+            if currentModel.provider == .local {
+                if !whisperState.isModelLoaded,
+                   let localModel = whisperState.availableModels.first(where: { $0.name == currentModel.name }) {
+                    try await whisperState.loadModel(localModel)
+                }
+                // Run a short inference pass through the shared context for Metal warmup.
+                let _ = try await whisperState.serviceRegistry.transcribe(audioURL: audioURL, model: currentModel)
+            } else if currentModel.provider == .parakeet {
+                // Parakeet: use the shared parakeet service to avoid a second model load.
+                if let parakeetModel = currentModel as? ParakeetModel {
+                    try? await whisperState.serviceRegistry.parakeetTranscriptionService.loadModel(for: parakeetModel)
+                }
+            }
+            // Cloud models don't need prewarming.
 
+            let duration = Date().timeIntervalSince(startTime)
             logger.notice("🌅 Prewarm completed in \(String(format: "%.2f", duration))s")
+            logger.memoryUsage("prewarm-end")
 
         } catch {
             logger.error("❌ Prewarm failed: \(error.localizedDescription)")

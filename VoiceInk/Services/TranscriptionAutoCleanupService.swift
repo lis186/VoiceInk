@@ -10,6 +10,8 @@ class TranscriptionAutoCleanupService {
 
     private let keyIsEnabled = "IsTranscriptionCleanupEnabled"
     private let keyRetentionMinutes = "TranscriptionRetentionMinutes"
+    /// When true, delete only the audio file after each transcription (text is kept).
+    static let keyDeleteAudioAfterTranscription = "DeleteAudioAfterTranscription"
 
     private let defaultRetentionMinutes: Int = 24 * 60
 
@@ -50,41 +52,59 @@ class TranscriptionAutoCleanupService {
 
     @objc private func handleTranscriptionCompleted(_ notification: Notification) {
         let isEnabled = UserDefaults.standard.bool(forKey: keyIsEnabled)
-        guard isEnabled else { return }
+        let deleteAudioOnly = UserDefaults.standard.bool(forKey: Self.keyDeleteAudioAfterTranscription)
 
-        let minutes = UserDefaults.standard.integer(forKey: keyRetentionMinutes)
-        if minutes > 0 {
-            if let modelContext = self.modelContext {
-                Task { [weak self] in
-                    guard let self = self else { return }
-                    await self.sweepOldTranscriptions(modelContext: modelContext)
+        if isEnabled {
+            let minutes = UserDefaults.standard.integer(forKey: keyRetentionMinutes)
+            if minutes > 0 {
+                // Time-based sweep: clean up old transcriptions in the background.
+                if let modelContext = self.modelContext {
+                    Task { [weak self] in
+                        guard let self = self else { return }
+                        await self.sweepOldTranscriptions(modelContext: modelContext)
+                    }
                 }
+                // Fall through: also apply audio-only delete if enabled.
+            } else {
+                // Immediate delete: remove both audio file and transcript record.
+                guard let transcription = notification.object as? Transcription,
+                      let modelContext = self.modelContext else {
+                    logger.error("Invalid transcription or missing model context")
+                    return
+                }
+                deleteAudioFile(for: transcription)
+                modelContext.delete(transcription)
+                do {
+                    try modelContext.save()
+                    NotificationCenter.default.post(name: .transcriptionDeleted, object: nil)
+                } catch {
+                    logger.error("Failed to save after transcription deletion: \(error.localizedDescription)")
+                }
+                return // Full delete done; skip audio-only logic below.
             }
-            return
         }
 
-        guard let transcription = notification.object as? Transcription,
-              let modelContext = self.modelContext else {
-            logger.error("Invalid transcription or missing model context")
-            return
-        }
+        // Audio-only delete: remove the audio file but keep the transcript text.
+        guard deleteAudioOnly,
+              let transcription = notification.object as? Transcription,
+              let modelContext = self.modelContext else { return }
 
-        if let urlString = transcription.audioFileURL,
-           let url = URL(string: urlString) {
-            do {
-                try FileManager.default.removeItem(at: url)
-            } catch {
-                logger.error("Failed to delete audio file: \(error.localizedDescription)")
-            }
-        }
+        deleteAudioFile(for: transcription, nullifyURL: true, context: modelContext)
+    }
 
-        modelContext.delete(transcription)
-
+    /// Deletes the audio file associated with a transcription.
+    /// If `nullifyURL` is true, clears `audioFileURL` on the model and saves.
+    private func deleteAudioFile(for transcription: Transcription, nullifyURL: Bool = false, context: ModelContext? = nil) {
+        guard let urlString = transcription.audioFileURL,
+              let url = URL(string: urlString) else { return }
         do {
-            try modelContext.save()
-            NotificationCenter.default.post(name: .transcriptionDeleted, object: nil)
+            try FileManager.default.removeItem(at: url)
+            if nullifyURL {
+                transcription.audioFileURL = nil
+                try? context?.save()
+            }
         } catch {
-            logger.error("Failed to save after transcription deletion: \(error.localizedDescription)")
+            logger.error("Failed to delete audio file: \(error.localizedDescription)")
         }
     }
 

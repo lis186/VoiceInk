@@ -8,7 +8,10 @@ private final class AudioChunkSource: @unchecked Sendable {
     private let continuation: AsyncStream<Data>.Continuation
 
     init() {
-        let (stream, continuation) = AsyncStream.makeStream(of: Data.self, bufferingPolicy: .unbounded)
+        // Use bounded buffering: drop oldest chunks if the send loop falls behind.
+        // .unbounded would let audio data accumulate without limit when the network
+        // is slow, causing memory to grow until the session ends.
+        let (stream, continuation) = AsyncStream.makeStream(of: Data.self, bufferingPolicy: .bufferingNewest(200))
         self.stream = stream
         self.continuation = continuation
     }

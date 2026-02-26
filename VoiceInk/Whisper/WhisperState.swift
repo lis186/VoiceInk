@@ -338,7 +338,8 @@ class WhisperState: NSObject, ObservableObject {
         }
 
         logger.notice("🔄 Starting transcription...")
-        
+        logger.memoryUsage("transcription-start")
+
         var finalPastedText: String?
         var promptDetectionResult: PromptDetectionService.PromptDetectionResult?
 
@@ -436,6 +437,7 @@ class WhisperState: NSObject, ObservableObject {
         }
 
         try? modelContext.save()
+        logger.memoryUsage("transcription-end")
 
         NotificationCenter.default.post(name: .transcriptionCompleted, object: transcription)
 

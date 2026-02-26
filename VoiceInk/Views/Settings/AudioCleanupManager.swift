@@ -10,6 +10,8 @@ class AudioCleanupManager {
     // Default cleanup settings
     private let defaultRetentionDays = 7
     private let cleanupCheckInterval: TimeInterval = 86400 // Check once per day (in seconds)
+
+    static let keyMaxAudioCount = "MaxAudioFileCount" // 0 = unlimited
     
     private init() {}
     
@@ -86,8 +88,9 @@ class AudioCleanupManager {
         }
     }
     
-    /// Perform the cleanup operation
+    /// Perform all cleanup operations (time-based and count-based).
     private func performCleanup(modelContext: ModelContext) async {
+        await cleanupByCount(modelContext: modelContext)
         // Get retention period from UserDefaults
         let effectiveRetentionDays = UserDefaults.standard.integer(forKey: "AudioRetentionPeriod")
 
@@ -176,6 +179,41 @@ class AudioCleanupManager {
         }
     }
     
+    /// Deletes audio files for transcriptions beyond the newest `maxCount`.
+    /// Keeps the newest N records intact; removes audio from older ones.
+    func cleanupByCount(modelContext: ModelContext) async {
+        let maxCount = UserDefaults.standard.integer(forKey: Self.keyMaxAudioCount)
+        guard maxCount > 0 else { return }
+
+        do {
+            try await MainActor.run {
+                var descriptor = FetchDescriptor<Transcription>(
+                    predicate: #Predicate<Transcription> { $0.audioFileURL != nil },
+                    sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+                )
+                descriptor.propertiesToFetch = [\.audioFileURL, \.timestamp]
+                let all = try modelContext.fetch(descriptor)
+
+                let toDelete = all.dropFirst(maxCount)
+                var count = 0
+                for transcription in toDelete {
+                    if let urlString = transcription.audioFileURL,
+                       let url = URL(string: urlString),
+                       FileManager.default.fileExists(atPath: url.path) {
+                        try? FileManager.default.removeItem(at: url)
+                        transcription.audioFileURL = nil
+                        count += 1
+                    }
+                }
+                if count > 0 {
+                    try modelContext.save()
+                }
+            }
+        } catch {
+            // Non-critical; silently ignore
+        }
+    }
+
     /// Format file size in human-readable form
     func formatFileSize(_ size: Int64) -> String {
         let byteCountFormatter = ByteCountFormatter()

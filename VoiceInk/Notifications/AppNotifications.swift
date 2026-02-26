@@ -1,4 +1,6 @@
 import Foundation
+import os
+import Darwin
 
 extension Notification.Name {
     static let AppSettingsDidChange = Notification.Name("appSettingsDidChange")
@@ -18,4 +20,23 @@ extension Notification.Name {
     static let enhancementToggleChanged = Notification.Name("enhancementToggleChanged")
     static let openFileForTranscription = Notification.Name("openFileForTranscription")
     static let audioDeviceSwitchRequired = Notification.Name("audioDeviceSwitchRequired")
+}
+
+// MARK: - Memory Diagnostics
+
+extension Logger {
+    /// Logs the current resident memory usage (RSS) at key lifecycle points.
+    /// Output appears in Console.app and is included in exported diagnostic logs.
+    func memoryUsage(_ context: String) {
+        var info = mach_task_basic_info()
+        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
+        let result = withUnsafeMutablePointer(to: &info) { ptr in
+            ptr.withMemoryRebound(to: integer_t.self, capacity: 1) {
+                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else { return }
+        let usedMB = Double(info.resident_size) / 1_048_576
+        self.notice("📊 Memory [\(context)]: \(String(format: "%.1f", usedMB)) MB")
+    }
 }
