@@ -38,6 +38,14 @@ struct TranscriptionOutputFilter {
         filteredText = filteredText.replacingOccurrences(of: #"\s{2,}"#, with: " ", options: .regularExpression)
         filteredText = filteredText.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        // Convert Simplified Chinese → Traditional Chinese when zh-TW is the selected language.
+        // CFStringTransform("Hans-Hant") is a built-in ICU transform; English characters are unaffected.
+        if UserDefaults.standard.string(forKey: "SelectedLanguage") == "zh-TW" {
+            let mutableStr = NSMutableString(string: filteredText)
+            CFStringTransform(mutableStr, nil, "Hans-Hant" as CFString, false)
+            filteredText = mutableStr as String
+        }
+
         return filteredText
     }
 } 
