@@ -10,3 +10,8 @@ iter	timestamp	commit	category	verdict	score_before	score_after	decision	notes
 8	00:13:04	bae0189	QWEN3	build-fail	135	135	skip	needs Qwen3ASR SwiftPM dep added first (separate task)
 9	00:34:57	2e2e2fa	QWEN3	content-conflict-resolved-but-build-fail	135	135	skip	Swift forbids @available on stored property; needs runtime instantiation pattern
 10	00:38:51	ce34499	QWEN3	abort	135	135	skip	extends deleted WhisperState class; needs re-impl on new architecture
+12	01:24:06	bae0189	QWEN3	clean-after-deps-bump	150	160	keep	after Qwen3ASR dep + macOS 15 target
+13	01:28:30	2e2e2fa	QWEN3	content-conflict-resolved	160	165	keep	after macOS 15 target, dropped @available stored prop
+14	01:28:53	dcfd053	QWEN3	clean-after-prereqs	165	170	keep	target file now exists after iter 12
+15	01:30:02	6104a2b	QWEN3	clean-after-prereqs	170	175	keep	WAV padding fix on now-existing files
+16	01:31:15	5bb13b9	QWEN3	empty-after-resolution	175	175	skip	workaround pattern obsoleted by macOS 15 target
