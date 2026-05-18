@@ -1,0 +1,12 @@
+iter	timestamp	commit	category	verdict	score_before	score_after	decision	notes
+0	2026-05-18-baseline	-	baseline	-	-	105	keep	baseline: 1 commit (make share) + build pass
+1	23:56:45	9623f4f	ZHTW	content-conflict-resolved	110	115	keep	zh-TW vocab additive merge
+2	23:58:10	5198ada	QWEN3	clean	115	120	keep	new file, no external refs yet
+3	23:59:36	bae0189	QWEN3	build-fail	120	120	discard	missing Qwen3ASR module dependency
+4	00:00:18	b1f09b1	LEAK-DELETED	clean	120	125	keep	deallocation test added cleanly
+5	00:02:13	cfa2fc0	MISC	content-conflict-resolved	125	130	keep	merged privacy annotation + listener cleanup line
+6	00:03:34	3e15e97	MISC	content-conflict	130	130	skip	needs reimpl against upstream's evolved paste flow
+7	00:11:43	5bf5c0e	QWEN3	content-conflict-resolved	130	135	keep	merged enum cases + decoder init from both sides
+8	00:13:04	bae0189	QWEN3	build-fail	135	135	skip	needs Qwen3ASR SwiftPM dep added first (separate task)
+9	00:34:57	2e2e2fa	QWEN3	content-conflict-resolved-but-build-fail	135	135	skip	Swift forbids @available on stored property; needs runtime instantiation pattern
+10	00:38:51	ce34499	QWEN3	abort	135	135	skip	extends deleted WhisperState class; needs re-impl on new architecture
