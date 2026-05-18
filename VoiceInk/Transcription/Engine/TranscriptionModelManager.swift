@@ -46,6 +46,9 @@ class TranscriptionModelManager: ObservableObject {
                 if #available(macOS 26, *) { return true } else { return false }
             case .custom:
                 return true
+            case .qwen3FluidAudio, .qwen3MLX:
+                // Qwen3 models auto-download on first transcribe; treat as always usable.
+                return true
             default:
                 if let cloudProvider = CloudProviderRegistry.provider(for: model.provider) {
                     return APIKeyManager.shared.hasAPIKey(forProvider: cloudProvider.providerKey)
