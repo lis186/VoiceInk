@@ -287,7 +287,8 @@ enum LanguageDictionary {
         "yi": "Yiddish",
         "yo": "Yoruba",
         "yue": "Cantonese",
-        "zh": "Chinese",
-        "zu": "Zulu",
+        "zh": "Chinese (Simplified)",
+        "zh-TW": "Chinese Traditional (繁體中文)",
+        "zu": "Zulu"
     ]
 }

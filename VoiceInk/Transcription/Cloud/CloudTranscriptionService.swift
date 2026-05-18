@@ -99,7 +99,9 @@ class CloudTranscriptionService: TranscriptionService {
 
     private func selectedLanguage(from context: TranscriptionRequestContext) -> String? {
         let lang = context.language ?? "auto"
-        return (lang == "auto" || lang.isEmpty) ? nil : lang
+        if lang == "auto" || lang.isEmpty { return nil }
+        // zh-TW is a UI variant; cloud APIs only accept ISO 639-1 "zh".
+        return lang == "zh-TW" ? "zh" : lang
     }
 
     private func getCustomDictionaryTerms() -> [String] {
