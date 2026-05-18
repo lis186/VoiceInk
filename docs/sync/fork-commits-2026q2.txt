@@ -1,0 +1,32 @@
+71868b630511a1fb7dc8895a4c71ced2e28d7315 Add Traditional Chinese (zh-TW) as a distinct transcription language option
+d4d18162f7571dd99d9e698144ecc3d739add560 Improve zh-TW: use auto-detect + Hans-Hant post-processing for code-switching
+f7841b3c5facb5e077745178e8dd9c660fb97fd9 Add Traditional Chinese (zh-TW) output support
+9623f4fce0b84d3f96b14191aed0b30b595f705c Expand zh-TW prompt with software/startup vocabulary
+3e15e97b8a6c1ea60cad56eeec033121b97cde73 Fix input source history corruption during paste
+5bf5c0ea2b789c480c1cd74ac384fdc4ad62e7ee feat: add Qwen3Model and qwen3FluidAudio/qwen3MLX ModelProvider cases
+16434a72b70bab502320e569492889dabb64a112 feat: register Qwen3-ASR models in PredefinedModels
+5198adaf57b17f239e2077ca9196d1d46158841d feat: add Qwen3FluidAudioTranscriptionService (CoreML via FluidAudio)
+bae01896ff2ecbd7d495c750a09cd6c500fc3a84 feat: add Qwen3MLXTranscriptionService (MLX via qwen3-asr-swift)
+dcfd0537168483a8d7064049ce2654b3ef55b45f fix: guard against odd-length WAV payload in Qwen3MLXTranscriptionService
+2e2e2faa17824a900ddfc73afe5538771ec0d153 feat: route qwen3FluidAudio and qwen3MLX in TranscriptionServiceRegistry
+ce3449956637bbfc2df2cd23fb107e0b288a8907 feat: add WhisperState+Qwen3 download helpers
+4ac52d9921fae23fb5c7fcbaeae25654d9de9de8 fix: align Qwen3 download flow with Parakeet (timer, cleanup, refresh)
+5bb13b99d6ce89ebf7b72a67064bad3bcfea8467 fix: use private optional for Qwen3FluidAudio service, update FluidAudio to latest main
+1c2fa7101b0e63a185869f2c7a494a76b560cbf4 fix: add exhaustive switch cases for qwen3 providers in ModelCardRowView and ModelQueries
+0217fb132a2bcafbd06a26809733956918868d47 feat: add Qwen3ModelCardRowView and show in Local tab
+6104a2b974a1a3445cc409c347c2b6243f1ad10b fix: read WAV audio via AVAudioFile to handle Core Audio FLLR padding
+a6ae2a3ef42a7ebb8446d592c876f6dc0bea6fd3 feat: remove CoreML Qwen3 provider, keep MLX only
+f41637375971a8e53f23d706ee4cc6bf21e81567 Merge remote-tracking branch 'upstream/main'
+bb8dc0ee2878f375d0cd8c1925a4b8f1e62474f1 fix: exclude Index.noindex from DerivedData app search in Makefile
+64d64eb5d8a7bc8fe22ba341fd29b8574c0be4ba feat: add make share target to package app for distribution
+b1f09b12eea467c72bbed21227b71a00579534e7 test: add WhisperState deallocation test (red)
+2352ca64dd7c70b8975e8762a7a29aff91b20b86 fix: remove NotificationCenter observers in WhisperState deinit
+ebb49d07a880e00a66d881f184ec5716a394fb8b fix: add HotkeyManager.cleanup() and wire to applicationWillTerminate
+cfa2fc0f0c13f7ae2e1c10d6697475a339656678 fix: replace AudioObjectPropertyListener with ListenerBlock API in AudioDeviceManager
+543c20ae6b37933c38d292b9f9b28a7f8e1dc0b9 fix: move WhisperState deinit to class body (deinit invalid in extension)
+1827d4830c8d6829f3fe3c76967fe9f935916bf9 fix: break retain cycle in TranscriptionServiceRegistry (whisperState → weak)
+1912ea16925c6d43fc2fe4083ebb4589e693f733 Merge fix/memory-leaks: 修復三個 memory leak 問題
+6f5eda69ac729f0b80b45ded01b972355a943e85 fix: 修復記憶體洩漏並新增音訊自動清除功能
+720f0a8b37cd01701396e6fa3a05787000caa5f7 fix: OSLog privacy annotation - mark Memory values as .public
+f3b0ea8f8c23faa7c0c4a7e257929d7488546cb2 fix: release LocalTranscriptionService whisperContext on cleanup
+29d247aa00f2cfb905f65d2b934e6f45caa6d030 fix: add cleanup() to LocalTranscriptionService to release WhisperContext

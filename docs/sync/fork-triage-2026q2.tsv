@@ -1,0 +1,33 @@
+commit	category	verdict	files_in_conflict
+71868b63	ZHTW	MODIFY-DELETE	VoiceInk/Models/PredefinedModels.swift,VoiceInk/Services/CloudTranscription/OpenAICompatibleTranscriptionService.swift
+d4d18162	ZHTW	MODIFY-DELETE	VoiceInk/Transcription/Whisper/LibWhisper.swift,VoiceInk/Transcription/Whisper/WhisperPrompt.swift,VoiceInk/Whisper/WhisperState.swift
+f7841b3c	ZHTW	MODIFY-DELETE	VoiceInk/CursorPaster.swift,VoiceInk/Transcription/Whisper/LibWhisper.swift,VoiceInk/Transcription/Whisper/WhisperPrompt.swift,VoiceInk/Whisper/WhisperState.swift
+9623f4fc	ZHTW	CONTENT-CONFLICT	VoiceInk/Transcription/Whisper/WhisperPrompt.swift
+3e15e97b	MISC	CONTENT-CONFLICT	VoiceInk/CursorPaster.swift
+5bf5c0ea	QWEN3	CONTENT-CONFLICT	VoiceInk/Models/TranscriptionModel.swift
+16434a72	QWEN3	MODIFY-DELETE	VoiceInk/Models/PredefinedModels.swift
+5198adaf	QWEN3	CLEAN	-
+bae01896	QWEN3	CLEAN	-
+dcfd0537	QWEN3	MODIFY-DELETE	VoiceInk/Services/Qwen3MLXTranscriptionService.swift
+2e2e2faa	QWEN3	CONTENT-CONFLICT	VoiceInk/Transcription/Engine/TranscriptionServiceRegistry.swift
+ce344995	QWEN3	CONTENT-CONFLICT	VoiceInk/Transcription/Whisper/WhisperState+Qwen3.swift
+4ac52d99	QWEN3	MODIFY-DELETE	VoiceInk/Whisper/WhisperState+Qwen3.swift,VoiceInk/Whisper/WhisperState.swift
+5bb13b99	QWEN3	MODIFY-DELETE	VoiceInk.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved,VoiceInk/Services/TranscriptionServiceRegistry.swift
+1c2fa710	QWEN3	MODIFY-DELETE	VoiceInk.xcodeproj/project.pbxproj,VoiceInk/Views/AI Models/ModelCardView.swift,VoiceInk/Whisper/WhisperState+ModelQueries.swift
+0217fb13	QWEN3	CONTENT-CONFLICT	VoiceInk/Views/AI Models/ModelCardView.swift,VoiceInk/Views/AI Models/ModelManagementView.swift
+6104a2b9	MISC	MODIFY-DELETE	VoiceInk/Services/Qwen3FluidAudioTranscriptionService.swift,VoiceInk/Services/Qwen3MLXTranscriptionService.swift
+a6ae2a3e	QWEN3	MODIFY-DELETE	VoiceInk/Models/PredefinedModels.swift,VoiceInk/Models/TranscriptionModel.swift,VoiceInk/Services/TranscriptionServiceRegistry.swift,VoiceInk/Views/AI Models/ModelCardView.swift,VoiceInk/Views/AI Models/ModelManagementView.swift,VoiceInk/Views/AI Models/Qwen3ModelCardRowView.swift,VoiceInk/Whisper/WhisperState+ModelQueries.swift,VoiceInk/Whisper/WhisperState+Qwen3.swift,VoiceInk/Whisper/WhisperState.swift
+f4163737	MERGE	CLEAN	-
+bb8dc0ee	BUILD	CONTENT-CONFLICT	Makefile
+64d64eb5	BUILD	CLEAN	-
+b1f09b12	LEAK-DELETED	CLEAN	-
+2352ca64	LEAK-DELETED	MODIFY-DELETE	VoiceInk/Whisper/WhisperState+UI.swift
+ebb49d07	LEAK-DELETED	MODIFY-DELETE	VoiceInk/HotkeyManager.swift
+cfa2fc0f	MISC	CONTENT-CONFLICT	VoiceInk/Services/AudioDeviceManager.swift
+543c20ae	LEAK-DELETED	MODIFY-DELETE	VoiceInk/Whisper/WhisperState+UI.swift,VoiceInk/Whisper/WhisperState.swift,VoiceInkTests/VoiceInkTests.swift
+1827d483	LEAK-DELETED	MODIFY-DELETE	VoiceInk/Services/TranscriptionServiceRegistry.swift
+1912ea16	LEAK	CLEAN	-
+6f5eda69	MISC	MODIFY-DELETE	VoiceInk/Services/ModelPrewarmService.swift,VoiceInk/Services/TranscriptionAutoCleanupService.swift,VoiceInk/Transcription/Whisper/WhisperModelManager.swift,VoiceInk/Whisper/WhisperState.swift
+720f0a8b	MISC	CONTENT-CONFLICT	VoiceInk/Notifications/AppNotifications.swift
+f3b0ea8f	LEAK-DELETED	MODIFY-DELETE	VoiceInk/Services/TranscriptionServiceRegistry.swift
+29d247aa	LEAK-DELETED	MODIFY-DELETE	VoiceInk/Services/LocalTranscriptionService.swift
