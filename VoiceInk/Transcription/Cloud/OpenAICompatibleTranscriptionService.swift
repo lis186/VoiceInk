@@ -59,7 +59,9 @@ class OpenAICompatibleTranscriptionService {
         field("temperature", "0")
 
         if selectedLanguage != "auto" && !selectedLanguage.isEmpty {
-            field("language", selectedLanguage)
+            // zh-TW is a UI variant; cloud APIs only accept ISO 639-1 "zh".
+            let apiLanguage = selectedLanguage == "zh-TW" ? "zh" : selectedLanguage
+            field("language", apiLanguage)
         }
 
         append("--\(boundary)--\(crlf)")

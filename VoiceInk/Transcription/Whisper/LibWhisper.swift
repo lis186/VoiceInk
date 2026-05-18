@@ -36,8 +36,10 @@ actor WhisperContext {
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         
         let selectedLanguage = language ?? "auto"
-        if selectedLanguage != "auto" {
-            languageCString = Array(selectedLanguage.utf8CString)
+        // zh-TW is a UI-only variant; Whisper only accepts "zh".
+        let whisperLanguage = selectedLanguage == "zh-TW" ? "zh" : selectedLanguage
+        if whisperLanguage != "auto" {
+            languageCString = Array(whisperLanguage.utf8CString)
             params.language = languageCString?.withUnsafeBufferPointer { ptr in
                 ptr.baseAddress
             }
