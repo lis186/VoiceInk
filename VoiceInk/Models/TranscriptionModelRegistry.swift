@@ -81,7 +81,7 @@ enum TranscriptionModelRegistry {
                 description: "Alibaba Qwen3-ASR via CoreML. 52 languages + 22 Chinese dialects. Requires macOS 15+.",
                 provider: .qwen3FluidAudio,
                 size: "~900 MB",
-                supportedLanguages: LanguageDictionary.forProvider(isMultilingual: true)
+                supportedLanguages: LanguageDictionary.forProvider(isMultilingual: true, provider: .qwen3FluidAudio)
             ),
 
             // Qwen3-ASR (MLX, macOS 15+, Apple Silicon)
@@ -91,7 +91,7 @@ enum TranscriptionModelRegistry {
                 description: "Alibaba Qwen3-ASR via MLX Swift. 52 languages + 22 Chinese dialects. Requires Apple Silicon.",
                 provider: .qwen3MLX,
                 size: "~400 MB",
-                supportedLanguages: LanguageDictionary.forProvider(isMultilingual: true)
+                supportedLanguages: LanguageDictionary.forProvider(isMultilingual: true, provider: .qwen3MLX)
             ),
 
             // Local Models
