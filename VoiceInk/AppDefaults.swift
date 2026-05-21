@@ -63,6 +63,11 @@ enum AppDefaults {
             // Model
             "PrewarmModelOnWake": true,
 
+            // Qwen3 ASR — system prompt injected as chat-template `system` role.
+            // Instructs Qwen3 to preserve English technical terms instead of
+            // transliterating them into Chinese phonetic approximations.
+            "Qwen3SystemPrompt": "你是一個語音轉寫助手。語境是中英夾雜的軟體工程、產品設計、新創討論（standup、code review、PR、deploy、sprint、KPI、OKR、retention、API、SDK 等技術用語）。請忠實轉錄使用者的語音內容，**保留英文技術術語為原文**，不要音譯成中文。輸出使用繁體中文。",
+
         ])
 
         PasteMethod.migrateLegacyUserDefaultIfNeeded()
