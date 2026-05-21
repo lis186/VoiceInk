@@ -5,6 +5,8 @@ import FluidAudio
 import os.log
 
 class Qwen3MLXTranscriptionService: TranscriptionService {
+    static let systemPromptKey = "Qwen3SystemPrompt"
+
     private var asrModel: Qwen3ASRModel?
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink.qwen3", category: "MLX")
 
@@ -20,9 +22,15 @@ class Qwen3MLXTranscriptionService: TranscriptionService {
             throw ASRError.notInitialized
         }
         let audioSamples = try readAudioSamples(from: audioURL)
+        let systemPrompt = UserDefaults.standard.string(forKey: Self.systemPromptKey)
         // transcribe() 是同步方法，包進 Task.detached 避免阻塞 caller thread
         return await Task.detached(priority: .userInitiated) {
-            asrModel.transcribe(audio: audioSamples, sampleRate: 16000)
+            asrModel.transcribe(
+                audio: audioSamples,
+                sampleRate: 16000,
+                language: nil,
+                context: systemPrompt
+            )
         }.value
     }
 
