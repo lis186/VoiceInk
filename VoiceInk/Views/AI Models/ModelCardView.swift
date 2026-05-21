@@ -56,6 +56,13 @@ struct ModelCardView: View {
                         editAction: editAction ?? { _ in }
                     )
                 }
+            case .qwen3FluidAudio, .qwen3MLX:
+                if let qwen3Model = model as? Qwen3Model {
+                    Qwen3ModelCardRowView(
+                        model: qwen3Model,
+                        transcriptionModelManager: transcriptionModelManager
+                    )
+                }
             default:
                 if let cloudModel = model as? CloudModel {
                     CloudModelCardView(
