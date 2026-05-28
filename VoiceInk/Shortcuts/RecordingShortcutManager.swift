@@ -315,6 +315,8 @@ class RecordingShortcutManager: ObservableObject {
         return isPrimaryShortcutConfigured && isSecondaryShortcutConfigured
     }
 
+    func cleanup() { removeAllMonitoring() }
+
     func updateShortcutStatus() {
         // Called when a shortcut changes
         refreshShortcutMonitoring()
