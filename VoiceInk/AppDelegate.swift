@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     weak var menuBarManager: MenuBarManager?
+    weak var recordingShortcutManager: RecordingShortcutManager?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         menuBarManager?.applyActivationPolicy()
@@ -20,6 +21,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        recordingShortcutManager?.cleanup()
     }
 
     // Stash URL when app cold-starts to avoid spawning a new window/tab
