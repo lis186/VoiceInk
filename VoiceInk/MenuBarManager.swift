@@ -64,6 +64,11 @@ class MenuBarManager: ObservableObject {
         isMenuBarOnly.toggle()
     }
 
+    func focusMainWindow() {
+        NSApplication.shared.setActivationPolicy(.regular)
+        WindowManager.shared.showMainWindow()
+    }
+
     func applyActivationPolicy(logPreferenceChange: Bool = false) {
         let changedPreferenceValue = isMenuBarOnly
 
