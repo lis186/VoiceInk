@@ -1,0 +1,65 @@
+sync-report 2026-06-25 (late run, 23:11 UTC)
+
+STATUS: UPSTREAM SYNC BLOCKED — MANUAL ACTION REQUIRED
+
+Upstream: Beingpax/VoiceInk main
+Fork:     lis186/VoiceInk main
+
+Fork main tip: 76ca4d1 "Refine menu bar window activation handling" (2026-06-23)
+Upstream tip: ae99213 "Merge pull request #797 from Beingpax/localization-control" (2026-06-25 15:27 UTC)
+
+Compare status: DIVERGED (fork's 76ca4d1 is NOT an ancestor of upstream main)
+Upstream ahead: 21 commits
+
+New upstream commits (oldest to newest):
+  8f7d750  Refine menu bar window activation handling          2026-06-23T03:16:48Z
+  4632b79  Merge pull request #792 (menu-bar-window-recovery) 2026-06-23T03:24:54Z
+  b2ded56  Redesign dashboard momentum experience              2026-06-23T16:30:57Z
+  a2bfb0b  Refine dashboard headlines and window sizing        2026-06-24T03:09:50Z
+  aaac81e  Merge pull request #793 (dashboard-momentum-redesign) 2026-06-24T03:15:06Z
+  299b7d1  Add hover copy button modifier                      2026-06-24T03:37:21Z
+  8036d02  Update AssemblyAI model and language support        2026-06-24T07:34:47Z
+  108e73d  Add regional English language codes                 2026-06-24T11:44:20Z
+  a81248   Update Cartesia streaming to Ink 2 English-only    2026-06-24T14:51:53Z
+  22edea8  Add cloud transcription onboarding setup            2026-06-24T17:22:26Z
+  8a85a78  Fix onboarding transcription verification state     2026-06-24T17:55:33Z
+  c54782   Move cleanup controls to history settings           2026-06-24T18:01:16Z
+  81a7cc  Merge pull request #795 (onboarding-transcription-setup) 2026-06-25T03:01:49Z
+  d0ed3cd  Wire audio cleanup toggle to scheduler              2026-06-25T03:08:41Z
+  7f248d2  Keep audio cleanup scheduling non-destructive       2026-06-25T03:14:05Z
+  b29064d  Run due audio cleanup on app appearance             2026-06-25T03:24:51Z
+  443b97b  Centralize cleanup setting keys                     2026-06-25T04:54:51Z
+  2a61c9f  Merge pull request #796 (history-settings-cleanup-controls) 2026-06-25T05:00:43Z
+  c8b9a0e  Add appearance preference import and settings control 2026-06-25T09:20:27Z
+  a340e75  Improve Localization Control                        2026-06-25T11:51:54Z
+  ae99213  Merge pull request #797 (localization-control)      2026-06-25T15:27:25Z
+
+Files changed across 21 commits:
+  MODIFIED  VoiceInk.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+            (LLMkit rev: adc2239 → 724c5f6)
+  MODIFIED  VoiceInk/AppDefaults.swift
+            (added CleanupSettingsKeys enum, 8 new lines)
+  ADDED     VoiceInk/Assets.xcassets/momentum-hero-bg.imageset/Contents.json
+  ADDED     VoiceInk/Assets.xcassets/momentum-hero-bg.imageset/momentum-hero-bg.png (binary)
+  MODIFIED  VoiceInk/Localizable.xcstrings  (+2061 / -130)
+  MODIFIED  VoiceInk/MenuBarManager.swift   (simplified, removed logging)
+  MODIFIED  VoiceInk/Models/LanguageDictionary.swift (regional English, AssemblyAI cleanup)
+
+Sync branch status:
+  sync/upstream-2026q2 → 36 custom commits on top of fork's main (76ca4d1)
+  Sync branch is NOT yet rebased on new upstream commits.
+
+Blocker: Proxy (127.0.0.1:41729) returns 403 for Beingpax/VoiceInk.
+  - git fetch upstream → 403
+  - api.github.com individual file/commit endpoints → 403
+
+To fix:
+  Option 1 (recommended): On GitHub, go to lis186/VoiceInk → main branch →
+            "Sync fork" button → "Update branch". This will merge the 21
+            upstream commits. Then re-run this sync routine.
+  Option 2 (local): git fetch upstream && git merge upstream/main &&
+            git push origin main && git push origin sync/upstream-2026q2 (after rebase)
+  Option 3: Add Beingpax/VoiceInk to this session's allowed repos and re-run.
+
+Note: The fork's main diverged from upstream (different commit SHAs for the
+same changes). A merge commit will be needed, not a fast-forward.
