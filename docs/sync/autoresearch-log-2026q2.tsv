@@ -1,0 +1,24 @@
+iter	timestamp	commit	category	verdict	score_before	score_after	decision	notes
+0	2026-05-18-baseline	-	baseline	-	-	105	keep	baseline: 1 commit (make share) + build pass
+1	23:56:45	9623f4f	ZHTW	content-conflict-resolved	110	115	keep	zh-TW vocab additive merge
+2	23:58:10	5198ada	QWEN3	clean	115	120	keep	new file, no external refs yet
+3	23:59:36	bae0189	QWEN3	build-fail	120	120	discard	missing Qwen3ASR module dependency
+4	00:00:18	b1f09b1	LEAK-DELETED	clean	120	125	keep	deallocation test added cleanly
+5	00:02:13	cfa2fc0	MISC	content-conflict-resolved	125	130	keep	merged privacy annotation + listener cleanup line
+6	00:03:34	3e15e97	MISC	content-conflict	130	130	skip	needs reimpl against upstream's evolved paste flow
+7	00:11:43	5bf5c0e	QWEN3	content-conflict-resolved	130	135	keep	merged enum cases + decoder init from both sides
+8	00:13:04	bae0189	QWEN3	build-fail	135	135	skip	needs Qwen3ASR SwiftPM dep added first (separate task)
+9	00:34:57	2e2e2fa	QWEN3	content-conflict-resolved-but-build-fail	135	135	skip	Swift forbids @available on stored property; needs runtime instantiation pattern
+10	00:38:51	ce34499	QWEN3	abort	135	135	skip	extends deleted WhisperState class; needs re-impl on new architecture
+12	01:24:06	bae0189	QWEN3	clean-after-deps-bump	150	160	keep	after Qwen3ASR dep + macOS 15 target
+13	01:28:30	2e2e2fa	QWEN3	content-conflict-resolved	160	165	keep	after macOS 15 target, dropped @available stored prop
+14	01:28:53	dcfd053	QWEN3	clean-after-prereqs	165	170	keep	target file now exists after iter 12
+15	01:30:02	6104a2b	QWEN3	clean-after-prereqs	170	175	keep	WAV padding fix on now-existing files
+16	01:31:15	5bb13b9	QWEN3	empty-after-resolution	175	175	skip	workaround pattern obsoleted by macOS 15 target
+n1	01:43:11	1c2fa71	QWEN3	manual-port	180	185	keep	ported intent to TranscriptionModelManager.swift
+n2	01:47:03	0217fb1	QWEN3	defer-ui-impl	185	185	skip	qwen3 UI needs custom port to new ModelCardView pattern - deferred
+n3	01:57:58	16434a7	QWEN3	manual-port	185	190	keep	registered Qwen3 models in new TranscriptionModelRegistry
+n4	02:10:29	71868b6	ZHTW	manual-port	190	195	keep	zh-TW language plumbing ported to new arch (LanguageDict + LibWhisper + 2 cloud)
+n5	02:18:34	d4d1816	ZHTW	manual-port	195	200	keep	auto-detect + Hans-Hant transform in TranscriptionOutputFilter (covers all 3 call sites)
+n6	02:20:03	f7841b3	ZHTW	obsoleted	200	200	skip	zh-TW + auto-detect + Hans-Hant covered by n4+n5; CursorPaster evolved
+n7	02:27:34	6f5eda6+720f0a8	MISC	manual-port-subset	200	205	keep	Logger.memoryUsage with privacy annotations (subsumes both)

@@ -43,7 +43,8 @@ enum LanguageDictionary {
         "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt",
         "ro", "ru", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq",
         "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl",
-        "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "yue", "zh"
+        "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "yue", "zh",
+        "zh-TW"
     ]
 
     static func forProvider(isMultilingual: Bool, provider: ModelProvider = .whisper) -> [String: String] {
@@ -74,6 +75,13 @@ enum LanguageDictionary {
             var filtered = all.filter { codes.contains($0.key) }
             filtered["auto"] = "Auto-detect"
             return filtered
+
+        case .qwen3FluidAudio, .qwen3MLX:
+            // TODO(qwen3-langs): Qwen3-ASR claims 52 languages + 22 Chinese dialects,
+            // but returning `all` overstates support. Refine to a curated set once
+            // the upstream Qwen3 language manifest is verified.
+            // See docs/language-codes-decision.md for the deferred refinement note.
+            return all
 
         default:
             return all
@@ -285,7 +293,8 @@ enum LanguageDictionary {
         "yi": "Yiddish",
         "yo": "Yoruba",
         "yue": "Cantonese",
-        "zh": "Chinese",
+        "zh": "Chinese (Simplified)",
+        "zh-TW": "Chinese Traditional (繁體中文)",
         "zu": "Zulu"
     ]
 }

@@ -330,10 +330,31 @@ struct ModelManagementView: View {
         .cornerRadius(8)
     }
 
-    private var localModels: [any TranscriptionModel] {
-        transcriptionModelManager.allAvailableModels.filter {
-            ($0.provider == .whisper || $0.provider == .nativeApple || $0.provider == .fluidAudio)
-                && transcriptionModelManager.isAvailableOnCurrentOS($0)
+    private var filteredModels: [any TranscriptionModel] {
+        switch selectedFilter {
+        case .recommended:
+            return transcriptionModelManager.allAvailableModels.filter {
+                let recommendedNames = ["ggml-base.en", "parakeet-tdt-0.6b-v2", "ggml-large-v3-turbo-q5_0", "whisper-large-v3-turbo"]
+                return recommendedNames.contains($0.name)
+            }.sorted { model1, model2 in
+                let recommendedOrder = ["ggml-base.en", "parakeet-tdt-0.6b-v2", "ggml-large-v3-turbo-q5_0", "whisper-large-v3-turbo"]
+                let index1 = recommendedOrder.firstIndex(of: model1.name) ?? Int.max
+                let index2 = recommendedOrder.firstIndex(of: model2.name) ?? Int.max
+                return index1 < index2
+            }
+        case .local:
+            return transcriptionModelManager.allAvailableModels.filter {
+                ($0.provider == .whisper
+                    || $0.provider == .nativeApple
+                    || $0.provider == .fluidAudio
+                    || $0.provider == .qwen3FluidAudio
+                    || $0.provider == .qwen3MLX)
+                    && transcriptionModelManager.isAvailableOnCurrentOS($0)
+            }
+        case .cloud:
+            return transcriptionModelManager.allAvailableModels.filter { CloudProviderRegistry.provider(for: $0.provider) != nil }
+        case .custom:
+            return transcriptionModelManager.allAvailableModels.filter { $0.provider == .custom }
         }
     }
 
