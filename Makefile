@@ -4,7 +4,7 @@ WHISPER_CPP_DIR := $(DEPS_DIR)/whisper.cpp
 FRAMEWORK_PATH := $(WHISPER_CPP_DIR)/build-apple/whisper.xcframework
 LOCAL_DERIVED_DATA := $(CURDIR)/.local-build
 
-.PHONY: all clean whisper setup build local check healthcheck help dev run share
+.PHONY: all clean whisper setup build local check healthcheck help dev run share sync-check sync
 
 # Default target
 all: check build
@@ -41,8 +41,23 @@ setup: whisper
 	@echo "Whisper framework is ready at $(FRAMEWORK_PATH)"
 	@echo "Please ensure your Xcode project references the framework from this new location."
 
+# ponytail: build unsigned then re-sign with stable cert so macOS permissions persist across rebuilds
 build: setup
-	xcodebuild -project VoiceInk.xcodeproj -scheme VoiceInk -configuration Debug CODE_SIGN_IDENTITY="" build
+	xcodebuild -project VoiceInk.xcodeproj -scheme VoiceInk -configuration Debug \
+		CODE_SIGN_IDENTITY="" \
+		SWIFT_ACTIVE_COMPILATION_CONDITIONS='$$(inherited) LOCAL_BUILD' \
+		build
+	@APP_PATH=$$(find "$$HOME/Library/Developer/Xcode/DerivedData" -path "*/VoiceInk-*/Build/Products/Debug/VoiceInk.app" -type d 2>/dev/null | head -1) && \
+	if [ -n "$$APP_PATH" ]; then \
+		echo "Re-signing with stable certificate..."; \
+		codesign --force --deep --sign "VoiceInk Local Build" \
+			--entitlements $(CURDIR)/VoiceInk/VoiceInk.local.entitlements \
+			"$$APP_PATH"; \
+		echo "Signed with VoiceInk Local Build certificate"; \
+		rm -rf /Applications/VoiceInk.app; \
+		ditto "$$APP_PATH" /Applications/VoiceInk.app; \
+		echo "Installed to /Applications/VoiceInk.app"; \
+	fi
 
 # Build for local use without Apple Developer certificate
 local: check setup
@@ -117,6 +132,28 @@ share:
 	echo "  2. Open Terminal, cd to the unzipped folder" && \
 	echo "  3. Run: bash install.sh"
 
+# Check upstream for new commits worth porting (read-only, touches nothing)
+# ponytail: edit NOISE regex below to tune what gets filtered out
+NOISE := l10n|localization|German|zh-Hans|Simplified Chinese|Bump build|Update to 1\.|version update|Updated to
+sync-check:
+	@git fetch upstream -q
+	@AHEAD=$$(git rev-list --count main..upstream/main); \
+	echo "上游比 main 多 $$AHEAD 個 commit"; \
+	if [ "$$AHEAD" = "0" ]; then echo "已是最新，無需同步。"; exit 0; fi; \
+	echo ""; \
+	echo "=== 值得看的（功能 / 修正）==="; \
+	git log --oneline main..upstream/main | grep -ivE '$(NOISE)' || echo "（無）"; \
+	echo ""; \
+	echo "=== 雜訊（在地化 / 版號，通常略過）==="; \
+	git log --oneline main..upstream/main | grep -iE '$(NOISE)' || echo "（無）"; \
+	echo ""; \
+	echo "同步指令："; \
+	echo "  git checkout main && git merge --ff-only upstream/main && git push origin main"; \
+	echo "  git checkout sync/upstream-2026q2 && git rebase main"
+
+sync: ## Auto-sync upstream → main → rebase sync branch → build → push
+	@bash scripts/auto-sync.sh
+
 # Cleanup
 clean:
 	@echo "Cleaning build artifacts..."
@@ -126,6 +163,7 @@ clean:
 # Help
 help:
 	@echo "Available targets:"
+	@echo "  sync-check         Show upstream commits worth porting (read-only)"
 	@echo "  check/healthcheck  Check if required CLI tools are installed"
 	@echo "  whisper            Clone and build whisper.cpp XCFramework"
 	@echo "  setup              Copy whisper XCFramework to VoiceInk project"
