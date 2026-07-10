@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 struct ModelCardView: View {
+    @EnvironmentObject private var transcriptionModelManager: TranscriptionModelManager
     let model: any TranscriptionModel
     let fluidAudioModelManager: FluidAudioModelManager
     let isDownloaded: Bool

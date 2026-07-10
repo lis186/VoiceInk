@@ -16,7 +16,7 @@ class Qwen3MLXTranscriptionService: TranscriptionService {
         asrModel = try await Qwen3ASRModel.fromPretrained()
     }
 
-    func transcribe(audioURL: URL, model: any TranscriptionModel) async throws -> String {
+    func transcribe(audioURL: URL, model: any TranscriptionModel, context: TranscriptionRequestContext) async throws -> String {
         try await ensureModelLoaded()
         guard let asrModel = asrModel else {
             throw ASRError.notInitialized

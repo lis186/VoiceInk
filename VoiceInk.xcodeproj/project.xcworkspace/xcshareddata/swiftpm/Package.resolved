@@ -1,5 +1,5 @@
 {
-  "originHash" : "0000000000000000000000000000000000000000000000000000000000000000",
+  "originHash" : "0ba5556fadd18a82f3c60cd2cb12788229ee79e32f0cf8876d0447b733081e5c",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "6276ba2b404829d139c45ff98427cf90e2efc59b",
-        "version" : "2.9.2"
+        "revision" : "066e75a8b3e99962685d6a90cdd5293ebffd9261",
+        "version" : "2.9.1"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
-        "revision" : "626b5b7b2f45e1b0b1c6f4a309296d1d21d7311b",
-        "version" : "1.7.1"
+        "revision" : "ca37474853a4b5f59a22c74bfdd449b1f6bc4cc2",
+        "version" : "1.8.1"
       }
     },
     {
@@ -285,8 +285,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "5073617dac96330a486245e4c0179cb0a6fd2256",
-        "version" : "1.12.0"
+        "revision" : "7dc6101ae4dbe95cd3bc9cebad3b7cf8e49a7a63",
+        "version" : "1.13.0"
       }
     },
     {
@@ -303,8 +303,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-metrics.git",
       "state" : {
-        "revision" : "d51c8d13fa366eec807eedb4e37daa60ff5bfdd5",
-        "version" : "2.10.1"
+        "revision" : "087e8074afa97040c3b870c8664fe5482fb87cc4",
+        "version" : "2.11.0"
       }
     },
     {
@@ -330,8 +330,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "81cc18264f92cd307ff98430f89372711d4f6fe9",
-        "version" : "1.43.0"
+        "revision" : "61d1b44f6e4e118792be1cff88ee2bc0267c6f9a",
+        "version" : "1.44.0"
       }
     },
     {
@@ -402,8 +402,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hummingbird-project/swift-websocket.git",
       "state" : {
-        "revision" : "ca48d46c25f8fa948d37eaa480c73172182cf90f",
-        "version" : "1.5.0"
+        "revision" : "126df9655565068bd97838c072c1db11f9fd42ee",
+        "version" : "1.6.1"
       }
     },
     {

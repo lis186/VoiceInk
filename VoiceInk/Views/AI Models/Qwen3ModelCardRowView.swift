@@ -1,6 +1,6 @@
 import SwiftUI
 import AppKit
-import FluidAudio
+import Qwen3ASR
 
 struct Qwen3ModelCardRowView: View {
     let model: Qwen3Model
@@ -22,7 +22,7 @@ struct Qwen3ModelCardRowView: View {
             actionSection
         }
         .padding(16)
-        .background(CardBackground(isSelected: isCurrent, useAccentGradientWhenSelected: isCurrent))
+        .background(AppCardBackground(isSelected: isCurrent))
     }
 
     private var headerSection: some View {
@@ -95,18 +95,10 @@ struct Qwen3ModelCardRowView: View {
     }
 
     private func showInFinder() {
-        let url: URL
-        switch model.provider {
-        case .qwen3FluidAudio:
-            url = Qwen3AsrModels.defaultCacheDirectory(variant: .int8)
-        case .qwen3MLX:
-            url = FileManager.default
-                .urls(for: .cachesDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("qwen3-speech", isDirectory: true)
-        default:
-            return
-        }
-
+        // ponytail: both Qwen3 variants use HuggingFace cache now
+        let url = FileManager.default
+            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("huggingface", isDirectory: true)
         let target = FileManager.default.fileExists(atPath: url.path)
             ? url
             : url.deletingLastPathComponent()
