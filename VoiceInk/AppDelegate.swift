@@ -7,7 +7,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "MenuBarWindowFlow")
 
     weak var menuBarManager: MenuBarManager?
-
+    weak var recordingShortcutManager: RecordingShortcutManager?
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         logger.notice(
             "🧭 Application finished launching. hasMenuBarManager=\((self.menuBarManager != nil), privacy: .public); activationPolicy=\(WindowDiagnostics.activationPolicyDescription(NSApplication.shared.activationPolicy()), privacy: .public); snapshot=\(WindowDiagnostics.windowSnapshot(), privacy: .public)"
@@ -39,6 +40,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        recordingShortcutManager?.cleanup()
     }
 
     // Stash URL when app cold-starts to avoid spawning a new window/tab

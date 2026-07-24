@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 struct ModelCardView: View {
+    @EnvironmentObject private var transcriptionModelManager: TranscriptionModelManager
     let model: any TranscriptionModel
     let fluidAudioModelManager: FluidAudioModelManager
     let isDownloaded: Bool
@@ -54,6 +55,13 @@ struct ModelCardView: View {
                         model: customModel,
                         deleteAction: deleteAction,
                         editAction: editAction ?? { _ in }
+                    )
+                }
+            case .qwen3FluidAudio, .qwen3MLX:
+                if let qwen3Model = model as? Qwen3Model {
+                    Qwen3ModelCardRowView(
+                        model: qwen3Model,
+                        transcriptionModelManager: transcriptionModelManager
                     )
                 }
             default:

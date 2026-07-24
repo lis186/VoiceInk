@@ -335,7 +335,8 @@ struct ModelManagementView: View {
 
     private var localModels: [any TranscriptionModel] {
         transcriptionModelManager.allAvailableModels.filter {
-            ($0.provider == .whisper || $0.provider == .nativeApple || $0.provider == .fluidAudio)
+            ($0.provider == .whisper || $0.provider == .nativeApple || $0.provider == .fluidAudio
+                || $0.provider == .qwen3FluidAudio || $0.provider == .qwen3MLX)
                 && transcriptionModelManager.isAvailableOnCurrentOS($0)
         }
     }

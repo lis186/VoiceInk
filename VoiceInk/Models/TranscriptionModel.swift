@@ -16,6 +16,8 @@ enum ModelProvider: String, Codable, Hashable, CaseIterable {
     case cartesia = "Cartesia"
     case custom = "Custom"
     case nativeApple = "Native Apple"
+    case qwen3FluidAudio = "Qwen3 (CoreML)"
+    case qwen3MLX = "Qwen3 (MLX)"
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -242,4 +244,15 @@ struct ImportedWhisperModel: TranscriptionModel {
         self.isMultilingualModel = true
         self.supportedLanguages = LanguageDictionary.forProvider(isMultilingual: true, provider: .whisper)
     }
+}
+
+struct Qwen3Model: TranscriptionModel {
+    let id = UUID()
+    let name: String
+    let displayName: String
+    let description: String
+    let provider: ModelProvider   // .qwen3FluidAudio 或 .qwen3MLX
+    let size: String
+    var isMultilingualModel: Bool { true }
+    let supportedLanguages: [String: String]
 }

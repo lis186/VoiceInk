@@ -341,4 +341,11 @@ extension WindowManager: NSWindowDelegate {
             didApplyInitialPlacement = false
         }
     }
+
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow,
+              window.identifier == Self.mainWindowIdentifier else { return }
+        NSApplication.shared.activate(ignoringOtherApps: true)
+    }
 }
